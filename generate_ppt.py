@@ -5,10 +5,48 @@
 生成一个专业的项目汇报PPT
 """
 
+import os
+from pathlib import Path
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
+
+# ==================== 文件路径配置 ====================
+# 修改输出路径: 根据需要选择以下选项之一
+
+# 选项1: 当前目录下 (默认)
+OUTPUT_PATH = "project_report.pptx"
+
+# 选项2: 指定绝对路径 (Windows 示例)
+# OUTPUT_PATH = r"C:\Users\YourName\Documents\project_report.pptx"
+
+# 选项3: 指定绝对路径 (Mac/Linux 示例)
+# OUTPUT_PATH = "/Users/YourName/Documents/project_report.pptx"
+
+# 选项4: 使用相对路径创建子目录
+# OUTPUT_PATH = "./output/project_report.pptx"
+
+# 选项5: 使用时间戳创建唯一文件名
+# from datetime import datetime
+# timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+# OUTPUT_PATH = f"project_report_{timestamp}.pptx"
+
+# 选项6: 使用 pathlib 构建跨平台路径
+# OUTPUT_PATH = str(Path.home() / "Documents" / "project_report.pptx")
+
+# 选项7: 自定义目录 + 文件名
+# CUSTOM_OUTPUT_DIR = "./reports"
+# OUTPUT_FILENAME = "my_project_report.pptx"
+# OUTPUT_PATH = os.path.join(CUSTOM_OUTPUT_DIR, OUTPUT_FILENAME)
+
+# ==================== 自动创建目录 ====================
+def ensure_output_directory():
+    """确保输出目录存在，不存在则创建"""
+    output_dir = os.path.dirname(OUTPUT_PATH)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"✓ 创建输出目录: {output_dir}")
 
 def create_title_slide(prs, title, subtitle):
     """创建标题幻灯片"""
@@ -75,6 +113,9 @@ def add_content_slide(prs, title, content_points):
 
 def main():
     """主函数"""
+    # 确保输出目录存在
+    ensure_output_directory()
+    
     # 创建演示文稿
     prs = Presentation()
     prs.slide_width = Inches(10)
@@ -195,9 +236,15 @@ def main():
     create_title_slide(prs, "谢谢！", "Q & A")
     
     # 保存演示文稿
-    output_file = "project_report.pptx"
-    prs.save(output_file)
-    print(f"✓ PPT已生成: {output_file}")
+    try:
+        prs.save(OUTPUT_PATH)
+        abs_path = os.path.abspath(OUTPUT_PATH)
+        print(f"✓ PPT生成成功!")
+        print(f"✓ 文件路径: {abs_path}")
+        print(f"✓ 文件大小: {os.path.getsize(OUTPUT_PATH) / 1024:.2f} KB")
+    except Exception as e:
+        print(f"✗ 生成PPT失败: {e}")
+        print(f"✗ 请检查输出路径是否正确: {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     main()
